@@ -1,11 +1,26 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using News.API.Data;
 using News.API.Middleware;
+
+var customOrigins = "CustomOrigins";
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
+
+builder.Services.AddCors(options =>
+{
+        var origins = builder.Configuration.GetSection("Cors:Origins").Get<string[]>();
+    options.AddPolicy(customOrigins,
+        policy =>
+        {
+            policy.WithOrigins(origins)
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+    });
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -42,7 +57,7 @@ using (var scope = app.Services.CreateScope())
 // Configure the HTTP request pipeline.
 
 app.UseHttpsRedirection();
-
+app.UseCors(customOrigins);
 app.UseAuthorization();
 
 app.MapControllers();
