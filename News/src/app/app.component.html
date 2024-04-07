@@ -1,0 +1,6 @@
+<h1>News</h1>
+<button mat-button color="primary" (click)="openDialog()">Add News</button>
+<div *ngFor="let newsCard of newsList">
+  <app-card [news]="newsCard" (loadNewsHandler)="loadNews()"></app-card>
+</div>
+
